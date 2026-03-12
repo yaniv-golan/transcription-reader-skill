@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT = str(Path(__file__).parent.parent / "skills" / "transcription-reader" / "scripts" / "extract_transcript.py")
+SCRIPT = str(Path(__file__).parent.parent / "scripts" / "extract_transcript.py")
 FIXTURES = Path(__file__).parent / "fixtures"
 
 

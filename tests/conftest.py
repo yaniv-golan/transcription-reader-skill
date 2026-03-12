@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 # Add the script directory to sys.path so we can import extract_transcript
-SCRIPT_DIR = Path(__file__).parent.parent / "skills" / "transcription-reader" / "scripts"
+SCRIPT_DIR = Path(__file__).parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
