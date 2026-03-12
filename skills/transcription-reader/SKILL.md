@@ -8,6 +8,11 @@ description: >-
   subtitles, meeting notes from recordings, or "what was said in the meeting/call/video."
   Also trigger when the user wants to summarize a recording, find who said what, extract action items
   from a call, search for topics in a transcript, or convert between transcription formats.
+license: MIT
+compatibility: Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA).
+metadata:
+  author: Yaniv Golan
+  version: "1.0.0"
 ---
 
 # Transcription Reader
@@ -30,7 +35,7 @@ Transcription files contain timing metadata that inflates token usage without ad
    **Large files (over ~200 lines):** Use the bundled extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). A large STJ file can see 90%+ reduction.
 
    ```bash
-   python3 SKILL_DIR/scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
+   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
    ```
 
 3. **Read the extracted text** (or the raw file if small) into context.
@@ -41,7 +46,7 @@ Transcription files contain timing metadata that inflates token usage without ad
 
 Sometimes the user needs timestamps — for example, "at what point did they discuss budgets?" or "create a clip list." In these cases, use the `--keep-timestamps` flag:
 ```bash
-python3 SKILL_DIR/scripts/extract_transcript.py INPUT_FILE --keep-timestamps
+python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --keep-timestamps
 ```
 This produces a format like:
 ```
