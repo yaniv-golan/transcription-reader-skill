@@ -22,7 +22,7 @@ jobs:
         run: |
           cp -r skills/transcription-reader transcription-reader
           sed -i 's|\${CLAUDE_SKILL_DIR}/||g' transcription-reader/SKILL.md
-          zip -r "transcription-reader-v${{ steps.version.outputs.version }}.zip" transcription-reader/
+          zip -r "transcription-reader.zip" transcription-reader/
           rm -rf transcription-reader
 
       - name: Create GitHub Release
@@ -30,4 +30,4 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            transcription-reader-v${{ steps.version.outputs.version }}.zip
+            transcription-reader.zip

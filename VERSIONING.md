@@ -2,18 +2,35 @@
 
 This project uses [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`).
 
+## Version Source of Truth
+
+The canonical version lives in the `VERSION` file at the repo root. All other version locations are updated from it.
+
 ## Version Locations
 
-Update the version in **all three** files:
+The version appears in **four** files (all managed by the bump script):
 
-1. `.claude-plugin/plugin.json` → `"version"` field
-2. `skills/transcription-reader/SKILL.md` → `metadata.version` in YAML frontmatter
-3. `pyproject.toml` → `version` field under `[project]`
+1. `VERSION` — source of truth
+2. `.claude-plugin/plugin.json` → `"version"` field
+3. `.cursor-plugin/plugin.json` → `"version"` field
+4. `pyproject.toml` → `version` field under `[project]`
+5. `skills/transcription-reader/SKILL.md` → `metadata.version` in YAML frontmatter
+
+## Bumping the Version
+
+```bash
+# Set a new version and propagate to all locations:
+./tools/bump-version.sh 0.4.0
+
+# Or edit VERSION manually, then propagate:
+./tools/bump-version.sh
+```
 
 ## Release Process
 
 ```bash
-# 1. Bump version in both files above
+# 1. Bump version
+./tools/bump-version.sh X.Y.Z
 # 2. Commit
 git commit -am "chore: bump version to X.Y.Z"
 # 3. Tag and push
@@ -21,4 +38,4 @@ git tag vX.Y.Z
 git push origin main --tags
 ```
 
-CI automatically creates a GitHub Release with platform-specific zips.
+CI automatically creates a GitHub Release with a generic zip for Manus, ChatGPT, and other platforms.

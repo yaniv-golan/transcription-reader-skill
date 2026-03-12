@@ -6,6 +6,7 @@
 [![Agent Skills Compatible](https://img.shields.io/badge/Agent_Skills-compatible-4A90D9)](https://agentskills.io)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-F97316)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/plugins)
+[![Cursor Plugin](https://img.shields.io/badge/Cursor-plugin-00D886)](https://cursor.com/docs/plugins)
 
 An AI agent skill for reading, parsing, and analyzing transcription and subtitle files. Strips timing metadata to produce compact, analysis-ready text — saving 40-90% of tokens depending on format.
 
@@ -35,16 +36,27 @@ Uses the open [Agent Skills](https://agentskills.io) standard. Works with Claude
 /plugin marketplace add yaniv-golan/transcription-reader-skill
 ```
 
+### Cursor
+
+1. Open **Cursor Settings**
+2. Paste `https://github.com/yaniv-golan/transcription-reader-skill` into the **Search or Paste Link** box
+
+### Manus
+
+1. Download [`transcription-reader.zip`](https://github.com/yaniv-golan/transcription-reader-skill/releases/latest/download/transcription-reader.zip)
+2. Go to **Settings** → **Skills**
+3. Click **+ Add** → **Upload**
+4. Upload the zip
+
 ### ChatGPT
 
-1. Download `transcription-reader-v*.zip` (the generic version) from the [Releases](https://github.com/yaniv-golan/transcription-reader-skill/releases) page
-2. Click **Settings** in the sidebar
-3. Choose **Skills** → **New Skill** → **Upload from your Computer**
-4. Upload the zip — the skill auto-activates when relevant
+1. Download [`transcription-reader.zip`](https://github.com/yaniv-golan/transcription-reader-skill/releases/latest/download/transcription-reader.zip)
+2. Go to **Settings** → **Skills** → **New Skill** → **Upload from your Computer**
+3. Upload the zip
 
-### Other Tools (Codex CLI, Cursor, Windsurf, Manus, etc.)
+### Other Tools (Codex CLI, Windsurf, etc.)
 
-Download `transcription-reader-v*.zip` from [Releases](https://github.com/yaniv-golan/transcription-reader-skill/releases) and copy the `transcription-reader/` folder to:
+Download [`transcription-reader.zip`](https://github.com/yaniv-golan/transcription-reader-skill/releases/latest/download/transcription-reader.zip) and extract the `transcription-reader/` folder to:
 
 - **Project-level**: `.agents/skills/` in your project root
 - **User-level**: `~/.agents/skills/`
