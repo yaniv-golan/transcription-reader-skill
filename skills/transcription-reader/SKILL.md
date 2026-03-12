@@ -28,19 +28,24 @@ Transcription files contain timing metadata that inflates token usage without ad
    - `.ass`, `.ssa` → Advanced SubStation Alpha / SubStation Alpha
    - `.json` (with `"stj"` root key) → STJ
 
-2. **Check the file size** to decide your approach:
+2. **If STJ → run the extraction script immediately.** Do not read the raw JSON. STJ is deeply nested with speaker ID maps, word-level timing arrays, and metadata — raw JSON is unreadable and wastes tokens. No exceptions, regardless of file size:
+   ```bash
+   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE
+   ```
 
-   **Small files (under ~200 lines / ~10KB):** Just read the file directly. The overhead of running the extraction script isn't worth it — you can mentally skip the timestamps as you read. For SRT and VTT, the text is easy to parse visually. For ASS/SSA, look for `Dialogue:` lines. Only for STJ (which is JSON) is direct reading messy even at small sizes, so always use the script for STJ.
+3. **For other formats, check the file size** to decide your approach:
 
-   **Large files (over ~200 lines):** Use the bundled extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). STJ files typically see 80-96% reduction depending on content.
+   **Small files (under ~200 lines / ~10KB):** Just read the file directly. The overhead of running the extraction script isn't worth it — you can mentally skip the timestamps as you read. For SRT and VTT, the text is easy to parse visually. For ASS/SSA, look for `Dialogue:` lines.
+
+   **Large files (over ~200 lines):** Use the extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). STJ files typically see 80-96% reduction depending on content.
 
    ```bash
    python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
    ```
 
-3. **Read the extracted text** (or the raw file if small) into context.
+4. **Read the extracted text** (or the raw file if small) into context.
 
-4. **Analyze** based on the user's request (summarize, search, extract action items, etc.).
+5. **Analyze** based on the user's request (summarize, search, extract action items, etc.).
 
 ## When Timing Data Matters
 
