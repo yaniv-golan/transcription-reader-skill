@@ -2,10 +2,10 @@
 name: transcription-reader
 description: "Efficiently read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA). Use this skill whenever the user uploads or references a transcription file, subtitle file, or meeting recording transcript. Trigger on file extensions like .stj, .stjson, .vtt, .srt, .ass, .ssa, or when the user mentions transcripts, captions, subtitles, meeting notes from recordings, or wants to summarize a recording, find who said what, extract action items, or convert between transcription formats."
 license: MIT
-compatibility: Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA).
 metadata:
   author: Yaniv Golan
   version: "0.3.0"
+  compatibility: "Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA)."
 ---
 
 # Transcription Reader
