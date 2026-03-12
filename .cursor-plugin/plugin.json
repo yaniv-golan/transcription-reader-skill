@@ -1,13 +1,12 @@
 {
   "name": "transcription-reader",
+  "displayName": "Transcription Reader",
   "version": "0.3.0",
   "description": "Read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA)",
   "author": {
     "name": "Yaniv Golan",
     "email": "yaniv@golan.name"
   },
-  "repository": "https://github.com/yaniv-golan/transcription-reader-skill",
   "license": "MIT",
-  "keywords": ["transcription", "subtitles", "captions", "vtt", "srt", "stj", "ass", "ssa"],
-  "skills": "./skills"
+  "keywords": ["transcription", "subtitles", "captions", "vtt", "srt", "stj", "ass", "ssa"]
 }

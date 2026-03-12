@@ -18,13 +18,10 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
 
-      - name: Build skill zip
+      - name: Build generic zip (Manus, ChatGPT, Cursor, etc.)
         run: |
-          mkdir transcription-reader
-          cp SKILL.md transcription-reader/
-          cp -r scripts transcription-reader/
-          cp -r references transcription-reader/
-          cp LICENSE transcription-reader/
+          cp -r skills/transcription-reader transcription-reader
+          sed -i 's|\${CLAUDE_SKILL_DIR}/||g' transcription-reader/SKILL.md
           zip -r "transcription-reader-v${{ steps.version.outputs.version }}.zip" transcription-reader/
           rm -rf transcription-reader
 
