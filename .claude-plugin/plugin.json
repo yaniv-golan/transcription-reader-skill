@@ -1,6 +1,6 @@
 {
   "name": "transcription-reader",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA)",
   "author": {
     "name": "Yaniv Golan",

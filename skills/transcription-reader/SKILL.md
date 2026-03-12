@@ -4,7 +4,7 @@ description: "Efficiently read, parse, and analyze transcription and subtitle fi
 license: MIT
 metadata:
   author: Yaniv Golan
-  version: "0.3.1"
+  version: "0.4.0"
   compatibility: "Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA)."
 ---
 

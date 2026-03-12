@@ -54,7 +54,20 @@ Uses the open [Agent Skills](https://agentskills.io) standard. Works with Claude
 2. Go to **Settings** → **Skills** → **New Skill** → **Upload from your Computer**
 3. Upload the zip
 
-### Other Tools (Codex CLI, Windsurf, etc.)
+### Codex CLI
+
+Use the built-in skill installer:
+
+```
+$skill-installer https://github.com/yaniv-golan/transcription-reader-skill
+```
+
+Or install manually:
+
+1. Download [`transcription-reader.zip`](https://github.com/yaniv-golan/transcription-reader-skill/releases/latest/download/transcription-reader.zip)
+2. Extract the `transcription-reader/` folder to `~/.codex/skills/`
+
+### Other Tools (Windsurf, etc.)
 
 Download [`transcription-reader.zip`](https://github.com/yaniv-golan/transcription-reader-skill/releases/latest/download/transcription-reader.zip) and extract the `transcription-reader/` folder to:
 
