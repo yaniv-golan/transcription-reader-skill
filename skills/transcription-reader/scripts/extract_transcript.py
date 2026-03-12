@@ -93,7 +93,10 @@ def merge_speaker_runs(segments: List[Segment]) -> List[Segment]:
     )
     for seg in segments[1:]:
         if seg.speaker is not None and seg.speaker == current.speaker:
-            current.text = current.text + " " + seg.text
+            if current.text and seg.text:
+                current.text = current.text + " " + seg.text
+            else:
+                current.text = current.text or seg.text
             if seg.end is not None:
                 current.end = seg.end
         else:
@@ -117,10 +120,16 @@ def segments_to_text(segments: List[Segment], keep_timestamps: bool) -> str:
         if keep_timestamps and seg.start is not None:
             prefix = f"[{format_time(seg.start)}] "
         if seg.speaker and seg.speaker != last_speaker:
-            lines.append(f"{prefix}{seg.speaker}: {seg.text}")
+            if seg.text:
+                lines.append(f"{prefix}{seg.speaker}: {seg.text}")
+            else:
+                lines.append(f"{prefix}{seg.speaker}:")
             last_speaker = seg.speaker
         elif seg.speaker:
-            lines.append(f"{prefix}{seg.text}")
+            if seg.text:
+                lines.append(f"{prefix}{seg.text}")
+            elif prefix:
+                lines.append(prefix.rstrip())
         else:
             lines.append(f"{prefix}{seg.text}")
             last_speaker = None
@@ -248,12 +257,17 @@ def extract_stj(filepath, keep_timestamps=False, min_confidence=0.0,
             print("  It contains speaker segments showing who spoke when, but no words.", file=sys.stderr)
         print("  Use --stats or --list-speakers to see speaker timing information.", file=sys.stderr)
 
-        # Still output speaker timeline as a useful fallback
-        lines = []
-        for seg in segments:
-            speaker_name = speaker_map.get(seg.speaker_id, seg.speaker_id) if seg.speaker_id else "Unknown"
-            lines.append(f"[{format_time(seg.start)} - {format_time(seg.end)}] {speaker_name}")
-        return '\n'.join(lines)
+        # Return Segment objects so post-processing pipeline works
+        # (--merge-speakers, --time-range, --output-format jsonl)
+        return [
+            Segment(
+                speaker=speaker_map.get(seg.speaker_id, seg.speaker_id) if seg.speaker_id else "Unknown",
+                text=seg.text or "",
+                start=seg.start,
+                end=seg.end,
+            )
+            for seg in segments
+        ]
 
     # Apply filters
     if min_confidence > 0:

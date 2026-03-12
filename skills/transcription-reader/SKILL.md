@@ -32,7 +32,7 @@ Transcription files contain timing metadata that inflates token usage without ad
 
    **Small files (under ~200 lines / ~10KB):** Just read the file directly. The overhead of running the extraction script isn't worth it — you can mentally skip the timestamps as you read. For SRT and VTT, the text is easy to parse visually. For ASS/SSA, look for `Dialogue:` lines. Only for STJ (which is JSON) is direct reading messy even at small sizes, so always use the script for STJ.
 
-   **Large files (over ~200 lines):** Use the bundled extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). A large STJ file can see 90%+ reduction.
+   **Large files (over ~200 lines):** Use the bundled extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). STJ files typically see 80-96% reduction depending on content.
 
    ```bash
    python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
@@ -66,7 +66,7 @@ Key features available in STJ:
 - **Confidence scores** — can filter out low-confidence segments with `--min-confidence 0.8`
 - **Word-level timing** — available when `word_timing_mode` is "complete" or "partial"
 
-**Diarization-only STJ files**: Some STJ files contain only speaker timing without transcribed text (the `text` field is empty). These are produced by diarization-only tools that identify *who* spoke *when*, but don't transcribe the words. The extraction script detects this automatically and outputs a speaker timeline showing time ranges and speaker names. If you encounter one, let the user know it contains speaker timing but no transcribed text — they may need to run a separate transcription step. Use `--stats` or `--list-speakers` to show useful speaker timing information from these files.
+**Diarization-only STJ files**: Some STJ files contain only speaker timing without transcribed text (the `text` field is empty). These are produced by diarization-only tools that identify *who* spoke *when*, but don't transcribe the words. The extraction script detects this automatically and emits a warning. All post-processing flags work on these files — use `--merge-speakers` to collapse consecutive same-speaker segments (e.g., 954 segments → ~200 merged blocks), `--time-range` to answer "who was talking between minute 20-30?", and `--output-format jsonl` for structured output. Use `--stats` or `--list-speakers` for speaker timing summaries. If you encounter a diarization-only file, let the user know it contains speaker timing but no transcribed words — they would need to run a separate transcription tool (e.g., Whisper) on the original audio to get the actual text.
 
 For advanced STJ work (building on top of the STJ data model, custom queries, programmatic access), read `references/stj-format.md` for the full specification and `stjlib` API reference.
 
@@ -132,4 +132,4 @@ Options:
   --stats                Show transcript statistics (duration, speaker counts, word counts).
 ```
 
-**Token-saving tips**: Use `--merge-speakers` to consolidate short segments (a 954-segment file becomes ~200 merged blocks). Combine with `--time-range` to extract just the section you need.
+**Token-saving tips**: Use `--merge-speakers` to consolidate short segments (a 954-segment file becomes ~200 merged blocks). Combine with `--time-range` to extract just the section you need. For maximum token efficiency with structured data, use `--merge-speakers --output-format jsonl`.
