@@ -28,9 +28,14 @@ Transcription files contain timing metadata that inflates token usage without ad
    - `.ass`, `.ssa` → Advanced SubStation Alpha / SubStation Alpha
    - `.json` (with `"stj"` root key) → STJ
 
-2. **If STJ → run the extraction script immediately.** Do not read the raw JSON. STJ is deeply nested with speaker ID maps, word-level timing arrays, and metadata — raw JSON is unreadable and wastes tokens. No exceptions, regardless of file size:
+2. **If STJ → run the extraction script immediately.** Do not read the raw JSON. STJ is deeply nested with speaker ID maps, word-level timing arrays, and metadata — raw JSON is unreadable and wastes tokens. No exceptions, regardless of file size. If `stjlib` is not installed, install it first (`pip install stjlib`).
    ```bash
+   # Basic extraction
    python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE
+   # For summarization (recommended — produces compact speaker blocks)
+   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --merge-speakers
+   # Quick overview
+   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --stats
    ```
 
 3. **For other formats, check the file size** to decide your approach:
@@ -106,7 +111,7 @@ If any package is missing, the script will tell you which one to install — it 
 
 After getting the transcript text into context, here are effective approaches for common tasks:
 
-**Summarize a meeting**: Identify the main topics discussed, key decisions made, and action items. Structure the summary with a brief overview followed by topic-by-topic detail.
+**Summarize a meeting**: Use `--merge-speakers` for the best summarization input — it produces compact speaker blocks instead of one-line-per-cue output. Identify the main topics discussed, key decisions made, and action items. Structure the summary with a brief overview followed by topic-by-topic detail.
 
 **Find what was said about a topic**: Search for relevant keywords. Include surrounding context (a few lines before and after) to capture the full discussion.
 
