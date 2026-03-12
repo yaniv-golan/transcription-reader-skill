@@ -1,0 +1,19 @@
+{
+  "name": "transcription-reader-marketplace",
+  "owner": {
+    "name": "Yaniv Golan",
+    "email": "yaniv@golan.name"
+  },
+  "metadata": {
+    "description": "Transcription and subtitle file reader skill"
+  },
+  "plugins": [
+    {
+      "name": "transcription-reader",
+      "source": "./",
+      "description": "Read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA)",
+      "category": "productivity",
+      "tags": ["transcription", "subtitles", "captions", "meeting-notes"]
+    }
+  ]
+}
