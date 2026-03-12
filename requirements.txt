@@ -1,0 +1,15 @@
+# Core dependencies for extract_transcript.py
+# Install only what you need for your format:
+#   STJ:     pip install stjlib
+#   VTT:     pip install webvtt-py
+#   SRT/ASS: pip install pysubs2
+#
+# Or install all:
+#   pip install -r requirements.txt
+
+stjlib>=0.4.0
+webvtt-py>=0.5.0
+pysubs2>=1.6.0
+
+# Test dependencies
+pytest>=7.0.0

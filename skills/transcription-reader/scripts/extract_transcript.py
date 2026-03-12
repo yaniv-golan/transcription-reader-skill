@@ -31,6 +31,37 @@ class Segment:
     end: Optional[float] = None    # seconds
 
 
+def parse_speaker_from_text(text: str) -> tuple:
+    """Extract speaker label from text using common transcription patterns.
+
+    Tries patterns in order of specificity:
+    1. >> Name: text  (Zoom/Teams prefix)
+    2. [NAME] text    (bracketed label)
+    3. Name: text     (inline colon — permissive: allows digits, hyphens, apostrophes, parens)
+
+    Returns (speaker, remaining_text) or (None, original_text).
+    """
+    # Pattern 1: >> Speaker: text (Zoom/Teams style)
+    m = re.match(r'^>>\s*([A-Za-z0-9][A-Za-z0-9\s.\-\'()]{0,30}):\s+(.+)$', text, re.DOTALL)
+    if m:
+        return m.group(1).strip(), m.group(2).strip()
+
+    # Pattern 2: [SPEAKER] text (bracketed label)
+    m = re.match(r'^\[([A-Za-z0-9][A-Za-z0-9\s.\-\']{0,30})\]\s+(.+)$', text, re.DOTALL)
+    if m:
+        return m.group(1).strip(), m.group(2).strip()
+
+    # Pattern 3: Speaker: text (inline colon, 2+ char label)
+    m = re.match(r'^([A-Za-z0-9][A-Za-z0-9\s.\-\'()]{0,30}):\s+(.+)$', text, re.DOTALL)
+    if m:
+        label = m.group(1).strip()
+        # Reject if label is a single character (likely not a speaker)
+        if len(label) >= 2:
+            return label, m.group(2).strip()
+
+    return None, text
+
+
 def parse_time_range(time_range: str):
     """Parse a time range string like '10:00-20:00' or '1:05:00-1:30:00'.
     Returns (start_seconds, end_seconds)."""
@@ -291,19 +322,18 @@ def extract_vtt(filepath, keep_timestamps=False, speakers_only=None, list_speake
 
     # Try to extract speaker labels from VTT voice tags or text patterns
     def parse_speaker(caption):
-        """Extract speaker from VTT voice tags (in raw lines) or inline text patterns."""
-        # Check raw lines for <v Speaker>text</v> tags (text property strips these)
+        """Extract speaker from VTT voice tags or inline text patterns."""
+        # webvtt-py provides caption.voice for <v Speaker>text</v> tags
+        if hasattr(caption, 'voice') and caption.voice:
+            return caption.voice, caption.text
+        # Fall back to raw lines check for older webvtt-py versions
         raw = '\n'.join(caption.lines) if hasattr(caption, 'lines') else caption.text
         m = re.match(r'<v\s+([^>]+)>(.*?)(?:</v>)?$', raw, re.DOTALL)
         if m:
             clean_text = re.sub(r'<[^>]+>', '', m.group(2)).strip()
             return m.group(1).strip(), clean_text
-        # SPEAKER NAME: text (from the clean text)
-        text = caption.text
-        m = re.match(r'^([A-Z][A-Za-z\s.]+):\s*(.+)$', text, re.DOTALL)
-        if m:
-            return m.group(1).strip(), m.group(2).strip()
-        return None, text
+        # Fall back to shared speaker parser for inline labels
+        return parse_speaker_from_text(caption.text)
 
     if list_speakers:
         speakers = set()
@@ -366,19 +396,18 @@ def extract_pysubs2(filepath, fmt, keep_timestamps=False, speakers_only=None,
         # ASS/SSA uses the Name field
         if event.name and event.name.strip():
             return event.name.strip()
-        # SRT sometimes has inline labels
-        m = re.match(r'^([A-Z][A-Za-z\s.]+):\s*(.+)$', event.text, re.DOTALL)
-        if m:
-            return m.group(1).strip()
-        return None
+        # SRT sometimes has inline labels — use shared parser
+        speaker, _ = parse_speaker_from_text(event.text)
+        return speaker
 
     def get_text(event):
         """Get clean text, stripping inline speaker label if present."""
-        m = re.match(r'^([A-Z][A-Za-z\s.]+):\s*(.+)$', event.text, re.DOTALL)
-        if m and not event.name:
-            return m.group(2).strip()
+        if not event.name or not event.name.strip():
+            _, text = parse_speaker_from_text(event.text)
+        else:
+            text = event.text
         # Clean ASS override tags like {\an8}
-        text = re.sub(r'\{\\[^}]+\}', '', event.text)
+        text = re.sub(r'\{\\[^}]+\}', '', text)
         # Replace \N with space
         text = text.replace('\\N', ' ').replace('\\n', ' ')
         return text.strip()
