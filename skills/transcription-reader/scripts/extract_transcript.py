@@ -17,7 +17,99 @@ import json
 import os
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Optional
+
+
+@dataclass
+class Segment:
+    """Common segment representation across all formats."""
+    speaker: Optional[str]
+    text: str
+    start: Optional[float] = None  # seconds
+    end: Optional[float] = None    # seconds
+
+
+def parse_time_range(time_range: str):
+    """Parse a time range string like '10:00-20:00' or '1:05:00-1:30:00'.
+    Returns (start_seconds, end_seconds)."""
+    parts = time_range.split('-', 1)
+    if len(parts) != 2:
+        print(f"Error: Invalid time range '{time_range}'. Use format MM:SS-MM:SS or HH:MM:SS-HH:MM:SS.",
+              file=sys.stderr)
+        sys.exit(1)
+    return timestamp_str_to_seconds(parts[0]), timestamp_str_to_seconds(parts[1])
+
+
+def filter_by_time_range(segments: List[Segment], time_range: str) -> List[Segment]:
+    """Filter segments to those overlapping the given time range."""
+    start, end = parse_time_range(time_range)
+    return [s for s in segments if s.start is not None and s.end is not None
+            and s.end > start and s.start < end]
+
+
+def merge_speaker_runs(segments: List[Segment]) -> List[Segment]:
+    """Merge consecutive segments from the same speaker into single blocks."""
+    if not segments:
+        return segments
+    merged = []
+    current = Segment(
+        speaker=segments[0].speaker,
+        text=segments[0].text,
+        start=segments[0].start,
+        end=segments[0].end,
+    )
+    for seg in segments[1:]:
+        if seg.speaker is not None and seg.speaker == current.speaker:
+            current.text = current.text + " " + seg.text
+            if seg.end is not None:
+                current.end = seg.end
+        else:
+            merged.append(current)
+            current = Segment(
+                speaker=seg.speaker,
+                text=seg.text,
+                start=seg.start,
+                end=seg.end,
+            )
+    merged.append(current)
+    return merged
+
+
+def segments_to_text(segments: List[Segment], keep_timestamps: bool) -> str:
+    """Render segments as plain text."""
+    lines = []
+    last_speaker = None
+    for seg in segments:
+        prefix = ""
+        if keep_timestamps and seg.start is not None:
+            prefix = f"[{format_time(seg.start)}] "
+        if seg.speaker and seg.speaker != last_speaker:
+            lines.append(f"{prefix}{seg.speaker}: {seg.text}")
+            last_speaker = seg.speaker
+        elif seg.speaker:
+            lines.append(f"{prefix}{seg.text}")
+        else:
+            lines.append(f"{prefix}{seg.text}")
+            last_speaker = None
+    return '\n'.join(lines)
+
+
+def segments_to_jsonl(segments: List[Segment]) -> str:
+    """Render segments as JSONL (one JSON object per line)."""
+    lines = []
+    for seg in segments:
+        obj = {}
+        if seg.speaker is not None:
+            obj["speaker"] = seg.speaker
+        obj["text"] = seg.text
+        if seg.start is not None:
+            obj["start"] = round(seg.start, 3)
+        if seg.end is not None:
+            obj["end"] = round(seg.end, 3)
+        lines.append(json.dumps(obj, ensure_ascii=False))
+    return '\n'.join(lines)
 
 
 def detect_format(filepath: str) -> str:
@@ -77,7 +169,8 @@ def timestamp_str_to_seconds(ts: str) -> float:
 # ── STJ ──────────────────────────────────────────────────────────────────────
 
 def extract_stj(filepath, keep_timestamps=False, min_confidence=0.0,
-                speakers_only=None, language=None, list_speakers=False, stats=False):
+                speakers_only=None, language=None, list_speakers=False, stats=False,
+                **kwargs) -> 'str | List[Segment]':
     try:
         import stjlib
     except ImportError:
@@ -149,24 +242,16 @@ def extract_stj(filepath, keep_timestamps=False, min_confidence=0.0,
     if stats:
         return _print_stats_stj(stj, segments, speaker_map)
 
-    # Output
-    lines = []
-    last_speaker = None
-    for seg in segments:
-        speaker_name = speaker_map.get(seg.speaker_id, seg.speaker_id) if seg.speaker_id else None
-        prefix = ""
-        if keep_timestamps:
-            prefix = f"[{format_time(seg.start)}] "
-        if speaker_name and speaker_name != last_speaker:
-            lines.append(f"{prefix}{speaker_name}: {seg.text}")
-            last_speaker = speaker_name
-        elif speaker_name:
-            lines.append(f"{prefix}{seg.text}")
-        else:
-            lines.append(f"{prefix}{seg.text}")
-            last_speaker = None
-
-    return '\n'.join(lines)
+    # Return common Segment objects
+    return [
+        Segment(
+            speaker=speaker_map.get(seg.speaker_id, seg.speaker_id) if seg.speaker_id else None,
+            text=seg.text,
+            start=seg.start,
+            end=seg.end,
+        )
+        for seg in segments
+    ]
 
 
 def _print_stats_stj(stj, segments, speaker_map):
@@ -194,7 +279,8 @@ def _print_stats_stj(stj, segments, speaker_map):
 
 # ── WebVTT ───────────────────────────────────────────────────────────────────
 
-def extract_vtt(filepath, keep_timestamps=False, speakers_only=None, list_speakers=False, stats=False, **kwargs):
+def extract_vtt(filepath, keep_timestamps=False, speakers_only=None, list_speakers=False, stats=False,
+                **kwargs) -> 'str | List[Segment]':
     try:
         import webvtt
     except ImportError:
@@ -243,8 +329,8 @@ def extract_vtt(filepath, keep_timestamps=False, speakers_only=None, list_speake
         lines.append(f"Total words: {total_words}")
         return '\n'.join(lines)
 
-    # Build list of (speaker, text, caption) tuples with speaker filtering
-    parsed = []
+    # Build Segment objects
+    result = []
     for cap in captions:
         speaker, text = parse_speaker(cap)
         text = re.sub(r'<[^>]+>', '', text).strip()
@@ -253,32 +339,20 @@ def extract_vtt(filepath, keep_timestamps=False, speakers_only=None, list_speake
         if speakers_only:
             if not speaker or speakers_only.lower() not in speaker.lower():
                 continue
-        parsed.append((speaker, text, cap))
+        result.append(Segment(
+            speaker=speaker,
+            text=text,
+            start=timestamp_str_to_seconds(cap.start),
+            end=timestamp_str_to_seconds(cap.end),
+        ))
 
-    lines = []
-    last_speaker = None
-    for speaker, text, cap in parsed:
-        prefix = ""
-        if keep_timestamps:
-            start_sec = timestamp_str_to_seconds(cap.start)
-            prefix = f"[{format_time(start_sec)}] "
-
-        if speaker and speaker != last_speaker:
-            lines.append(f"{prefix}{speaker}: {text}")
-            last_speaker = speaker
-        elif speaker:
-            lines.append(f"{prefix}{text}")
-        else:
-            lines.append(f"{prefix}{text}")
-            last_speaker = None
-
-    return '\n'.join(lines)
+    return result
 
 
 # ── SRT / ASS / SSA ─────────────────────────────────────────────────────────
 
 def extract_pysubs2(filepath, fmt, keep_timestamps=False, speakers_only=None,
-                    list_speakers=False, stats=False, **kwargs):
+                    list_speakers=False, stats=False, **kwargs) -> 'str | List[Segment]':
     try:
         import pysubs2
     except ImportError:
@@ -343,28 +417,21 @@ def extract_pysubs2(filepath, fmt, keep_timestamps=False, speakers_only=None,
             lines.append(f"Speakers: {', '.join(sorted(speakers))}")
         return '\n'.join(lines)
 
-    lines = []
-    last_speaker = None
+    # Build Segment objects
+    result = []
     for e in events:
         speaker = get_speaker(e)
         text = get_text(e)
         if not text:
             continue
+        result.append(Segment(
+            speaker=speaker,
+            text=text,
+            start=ms_to_seconds(e.start),
+            end=ms_to_seconds(e.end),
+        ))
 
-        prefix = ""
-        if keep_timestamps:
-            prefix = f"[{format_time(ms_to_seconds(e.start))}] "
-
-        if speaker and speaker != last_speaker:
-            lines.append(f"{prefix}{speaker}: {text}")
-            last_speaker = speaker
-        elif speaker:
-            lines.append(f"{prefix}{text}")
-        else:
-            lines.append(f"{prefix}{text}")
-            last_speaker = None
-
-    return '\n'.join(lines)
+    return result
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -378,6 +445,8 @@ def main():
     parser.add_argument('--format', '-f', choices=['stj', 'vtt', 'srt', 'ass', 'ssa'],
                         help='Force format (auto-detected from extension if omitted)')
     parser.add_argument('--output', '-o', help='Output file (default: stdout)')
+    parser.add_argument('--output-format', choices=['text', 'jsonl'], default='text',
+                        help='Output format: text (default) or jsonl')
     parser.add_argument('--keep-timestamps', '-t', action='store_true',
                         help='Include timestamps in output')
     parser.add_argument('--min-confidence', type=float, default=0.0,
@@ -390,6 +459,10 @@ def main():
                         help='List speakers found in the file')
     parser.add_argument('--stats', action='store_true',
                         help='Show transcript statistics')
+    parser.add_argument('--merge-speakers', '-m', action='store_true',
+                        help='Merge consecutive segments from the same speaker')
+    parser.add_argument('--time-range',
+                        help='Extract only a time range (e.g., 10:00-20:00 or 1:05:00-1:30:00)')
 
     args = parser.parse_args()
 
@@ -422,12 +495,38 @@ def main():
         print(f"Error: Unsupported format: {fmt}", file=sys.stderr)
         sys.exit(1)
 
-    if result is not None:
+    if result is None:
+        return
+
+    # If result is a string (stats, list_speakers, diarization fallback), output directly
+    if isinstance(result, str):
         if args.output:
             Path(args.output).write_text(result, encoding='utf-8')
             print(f"Written to {args.output}", file=sys.stderr)
         else:
             print(result)
+        return
+
+    # result is List[Segment] — apply post-processing pipeline
+    segments = result
+
+    if args.time_range:
+        segments = filter_by_time_range(segments, args.time_range)
+
+    if args.merge_speakers:
+        segments = merge_speaker_runs(segments)
+
+    # Render output
+    if args.output_format == 'jsonl':
+        output = segments_to_jsonl(segments)
+    else:
+        output = segments_to_text(segments, args.keep_timestamps)
+
+    if args.output:
+        Path(args.output).write_text(output, encoding='utf-8')
+        print(f"Written to {args.output}", file=sys.stderr)
+    else:
+        print(output)
 
 
 if __name__ == '__main__':

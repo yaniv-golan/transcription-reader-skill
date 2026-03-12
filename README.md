@@ -34,8 +34,8 @@ Uses the open [Agent Skills](https://agentskills.io) standard. Works with Claude
 ### ChatGPT
 
 1. Download `transcription-reader-v*.zip` (the generic version) from the [Releases](https://github.com/yaniv-golan/transcription-reader-skill/releases) page
-2. Go to [chatgpt.com/skills](https://chatgpt.com/skills)
-3. Click **New skill** → **Upload from computer**
+2. Click **Settings** in the sidebar
+3. Choose **Skills** → **New Skill** → **Upload from your Computer**
 4. Upload the zip — the skill auto-activates when relevant
 
 ### Other Tools (Codex CLI, Cursor, Windsurf, Manus, etc.)
@@ -44,6 +44,14 @@ Download `transcription-reader-v*.zip` from [Releases](https://github.com/yaniv-
 
 - **Project-level**: `.agents/skills/` in your project root
 - **User-level**: `~/.agents/skills/`
+
+## Usage
+
+The skill auto-activates when you attach or reference a transcription file. You can also invoke it manually with `/transcription-reader`:
+
+```
+/transcription-reader summarize the first 20 minutes of the attached conversation
+```
 
 ## How It Works
 
@@ -64,7 +72,10 @@ Usage: extract_transcript.py INPUT_FILE [options]
 Options:
   --format FORMAT        Force format (auto-detected from extension if omitted)
   --output FILE          Write to file instead of stdout
+  --output-format FMT    Output as 'text' (default) or 'jsonl' (one JSON object per line)
   --keep-timestamps      Include timestamps in output
+  --merge-speakers       Merge consecutive segments from the same speaker
+  --time-range RANGE     Extract only a time range (e.g., 10:00-20:00)
   --min-confidence N     Skip low-confidence segments (STJ only)
   --speakers-only NAME   Filter to a specific speaker
   --language LANG        Filter by language (STJ only)

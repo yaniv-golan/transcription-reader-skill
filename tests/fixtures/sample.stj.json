@@ -1,0 +1,32 @@
+{
+  "stj": {
+    "version": "0.6.1",
+    "metadata": {
+      "transcriber": {
+        "name": "test",
+        "version": "1.0"
+      },
+      "created_at": "2026-01-01T00:00:00Z",
+      "source": {
+        "duration": 38.0
+      }
+    },
+    "transcript": {
+      "speakers": [
+        {"id": "s1", "name": "Alice"},
+        {"id": "s2", "name": "Bob"},
+        {"id": "s3", "name": "Charlie"}
+      ],
+      "segments": [
+        {"start": 1.0, "end": 4.5, "text": "Welcome everyone to the meeting.", "speaker_id": "s1"},
+        {"start": 5.0, "end": 8.2, "text": "Let's start with the agenda.", "speaker_id": "s1"},
+        {"start": 9.0, "end": 13.0, "text": "Thanks Alice. I have updates on the Q3 budget.", "speaker_id": "s2"},
+        {"start": 14.0, "end": 18.5, "text": "We're currently under budget by fifteen percent.", "speaker_id": "s2"},
+        {"start": 19.0, "end": 23.0, "text": "That's great news. Any concerns?", "speaker_id": "s1"},
+        {"start": 24.0, "end": 28.0, "text": "I think we should discuss the timeline for the new project.", "speaker_id": "s3"},
+        {"start": 29.0, "end": 33.5, "text": "The deadline is next Friday and we're behind.", "speaker_id": "s3"},
+        {"start": 34.0, "end": 38.0, "text": "Good point. Let's allocate more resources.", "speaker_id": "s1"}
+      ]
+    }
+  }
+}

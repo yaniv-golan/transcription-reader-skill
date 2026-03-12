@@ -1,0 +1,31 @@
+1
+00:00:01,000 --> 00:00:04,500
+ALICE: Welcome everyone to the meeting.
+
+2
+00:00:05,000 --> 00:00:08,200
+ALICE: Let's start with the agenda.
+
+3
+00:00:09,000 --> 00:00:13,000
+BOB: Thanks Alice. I have updates on the Q3 budget.
+
+4
+00:00:14,000 --> 00:00:18,500
+BOB: We're currently under budget by fifteen percent.
+
+5
+00:00:19,000 --> 00:00:23,000
+ALICE: That's great news. Any concerns?
+
+6
+00:00:24,000 --> 00:00:28,000
+CHARLIE: I think we should discuss the timeline for the new project.
+
+7
+00:00:29,000 --> 00:00:33,500
+CHARLIE: The deadline is next Friday and we're behind.
+
+8
+00:00:34,000 --> 00:00:38,000
+ALICE: Good point. Let's allocate more resources.

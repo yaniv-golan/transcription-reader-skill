@@ -12,7 +12,7 @@ license: MIT
 compatibility: Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA).
 metadata:
   author: Yaniv Golan
-  version: "0.1.2"
+  version: "0.2.0"
 ---
 
 # Transcription Reader
@@ -121,10 +121,15 @@ Usage: extract_transcript.py INPUT_FILE [options]
 Options:
   --format FORMAT        Force format (stj, vtt, srt, ass, ssa). Auto-detected from extension if omitted.
   --output FILE          Write to file instead of stdout.
+  --output-format FMT    Output as 'text' (default) or 'jsonl' (one JSON object per line).
   --keep-timestamps      Include timestamps in output.
+  --merge-speakers       Merge consecutive segments from the same speaker into single blocks.
+  --time-range RANGE     Extract only a time range (e.g., 10:00-20:00 or 1:05:00-1:30:00).
   --min-confidence N     Skip segments below this confidence (STJ only, default: 0.0).
   --speakers-only NAME   Filter to segments from a specific speaker.
   --language LANG        Filter to segments in a specific language (STJ only).
   --list-speakers        Just list speakers found in the file, don't extract text.
   --stats                Show transcript statistics (duration, speaker counts, word counts).
 ```
+
+**Token-saving tips**: Use `--merge-speakers` to consolidate short segments (a 954-segment file becomes ~200 merged blocks). Combine with `--time-range` to extract just the section you need.

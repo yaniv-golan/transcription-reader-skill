@@ -1,0 +1,9 @@
+[project]
+name = "transcription-reader-skill"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+test = ["pytest", "stjlib", "webvtt-py", "pysubs2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
