@@ -12,7 +12,7 @@ license: MIT
 compatibility: Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA).
 metadata:
   author: Yaniv Golan
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Transcription Reader
