@@ -1,13 +1,6 @@
 ---
 name: transcription-reader
-description: >-
-  Efficiently read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA).
-  Use this skill whenever the user uploads or references a transcription file, subtitle file, or meeting
-  recording transcript — even if they don't name the format. Trigger on file extensions like .stj,
-  .stjson, .stj.json, .vtt, .srt, .ass, .ssa, or when the user mentions transcripts, captions,
-  subtitles, meeting notes from recordings, or "what was said in the meeting/call/video."
-  Also trigger when the user wants to summarize a recording, find who said what, extract action items
-  from a call, search for topics in a transcript, or convert between transcription formats.
+description: "Efficiently read, parse, and analyze transcription and subtitle files (STJ, VTT, SRT, ASS, SSA). Use this skill whenever the user uploads or references a transcription file, subtitle file, or meeting recording transcript. Trigger on file extensions like .stj, .stjson, .vtt, .srt, .ass, .ssa, or when the user mentions transcripts, captions, subtitles, meeting notes from recordings, or wants to summarize a recording, find who said what, extract action items, or convert between transcription formats."
 license: MIT
 compatibility: Requires Python 3. Optional packages: stjlib (STJ), webvtt-py (VTT), pysubs2 (SRT/ASS/SSA).
 metadata:
