@@ -31,11 +31,11 @@ Transcription files contain timing metadata that inflates token usage without ad
 2. **If STJ → run the extraction script immediately.** Do not read the raw JSON. STJ is deeply nested with speaker ID maps, word-level timing arrays, and metadata — raw JSON is unreadable and wastes tokens. No exceptions, regardless of file size. If `stjlib` is not installed, install it first (`pip install stjlib`).
    ```bash
    # Basic extraction
-   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE
+   python3 scripts/extract_transcript.py INPUT_FILE
    # For summarization (recommended — produces compact speaker blocks)
-   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --merge-speakers
+   python3 scripts/extract_transcript.py INPUT_FILE --merge-speakers
    # Quick overview
-   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --stats
+   python3 scripts/extract_transcript.py INPUT_FILE --stats
    ```
 
 3. **For other formats, check the file size** to decide your approach:
@@ -45,7 +45,7 @@ Transcription files contain timing metadata that inflates token usage without ad
    **Large files (over ~200 lines):** Use the extraction script. This is where the savings matter — a 2400-line Zoom VTT becomes ~1400 lines of clean text (41% reduction, ~7K tokens saved). STJ files typically see 80-96% reduction depending on content.
 
    ```bash
-   python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
+   python3 scripts/extract_transcript.py INPUT_FILE [--format FORMAT] [--output OUTPUT_FILE]
    ```
 
 4. **Read the extracted text** (or the raw file if small) into context.
@@ -56,7 +56,7 @@ Transcription files contain timing metadata that inflates token usage without ad
 
 Sometimes the user needs timestamps — for example, "at what point did they discuss budgets?" or "create a clip list." In these cases, use the `--keep-timestamps` flag:
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/extract_transcript.py INPUT_FILE --keep-timestamps
+python3 scripts/extract_transcript.py INPUT_FILE --keep-timestamps
 ```
 This produces a format like:
 ```

@@ -9,5 +9,5 @@
   "repository": "https://github.com/yaniv-golan/transcription-reader-skill",
   "license": "MIT",
   "keywords": ["transcription", "subtitles", "captions", "vtt", "srt", "stj", "ass", "ssa"],
-  "skills": ["./skills"]
+  "skills": ["."]
 }
