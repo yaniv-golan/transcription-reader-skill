@@ -2,6 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/v/release/yaniv-golan/transcription-reader-skill)](https://github.com/yaniv-golan/transcription-reader-skill/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/yaniv-golan/transcription-reader-skill/tests.yml?label=tests)](https://github.com/yaniv-golan/transcription-reader-skill/actions/workflows/tests.yml)
+[![Agent Skills Compatible](https://img.shields.io/badge/Agent_Skills-compatible-4A90D9)](https://agentskills.io)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-F97316)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/plugins)
 
 An AI agent skill for reading, parsing, and analyzing transcription and subtitle files. Strips timing metadata to produce compact, analysis-ready text — saving 40-90% of tokens depending on format.
 
