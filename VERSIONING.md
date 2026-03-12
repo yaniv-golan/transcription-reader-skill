@@ -4,10 +4,11 @@ This project uses [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH
 
 ## Version Locations
 
-Update the version in **both** files:
+Update the version in **all three** files:
 
 1. `.claude-plugin/plugin.json` → `"version"` field
 2. `skills/transcription-reader/SKILL.md` → `metadata.version` in YAML frontmatter
+3. `pyproject.toml` → `version` field under `[project]`
 
 ## Release Process
 
